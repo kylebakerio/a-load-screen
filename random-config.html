@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+  <head>
+<!--     <title>C</title> -->
+    <title>A-LOAD-SCREEN</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/loadingio/loading-bar@v0.1.0/dist/loading-bar.min.css"/>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/loadingio/loading-bar@v0.1.0/dist/loading-bar.js"></script>
+    <script src="a-load-screen.js"></script>
+    <script>
+      let logoSize = Math.max(Math.round(Math.random() * 6)*100, 200)
+      let randomLogos = ["https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/00029.png?v=1663843931164","https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/00012.png?v=1663843858747","https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/00019.png?v=1663840381284","https://aframe.io/aframe-school/media/img/aframe-logo.png", "https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/00053.png?v=1663837802914", "https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/00055.png?v=1663837756719", "https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/00060.png?v=1663837786871"];
+      let randomLogo = randomLogos[Math.floor(Math.random() * randomLogos.length)];
+      let loaderPresets = ["", null, "line", "rainbow", "energy", "stripe", "text", "filenames"];
+      let randomPreset = loaderPresets[Math.round(Math.random()*loaderPresets.length-1)]
+      let randomColor = () => [0,0,0,0,0,0].reduce((m,l) => m+Math.floor((Math.random() * 16)).toString(16).toUpperCase(),"#")  // "#"+Math.floor(Math.random()*16777215).toString(16);
+
+      // here's a config object. everything is optional. almost all settings are shown here.
+      // while most of the obvious choices look pretty good, I didn't spend as much time perfecting it
+      // as I would have liked. 
+      let loaderOptions = {
+        debug:['log','warn','error'],
+        showLogoLoader: !!Math.round(Math.random()*1),
+        useGlitchEffect: !!Math.round(Math.random()*1),
+        showTitle: !!Math.round(Math.random()*1), //!!Math.round(Math.random()),
+        logoURL: randomLogo,
+        logoSize: [logoSize,logoSize],//"200,200",
+        font: "400 1.1rem/.1 Fira Sans,Helvetica,Arial,sans-serif",
+        // titleText: "A-LOAD-SCREEN (CTRL + SHIFT + R)",
+        hideSubtitle: false, 
+        // subtitleOverride: "",
+        titleFontStyle: `text-align:center;font-weight:${Math.floor(Math.random() * 10)*100};`, // don't specify font-size here, use titleFontSize
+        // titleFontSize: Math.random() * 100, // titleFontSize: see init for dynamic value setting; basically, if left unset, will be set to maximum font size to fit width of your image
+        showTextSpeedometer: !!Math.round(Math.random()),
+        fadeLoaderRows: !!Math.round(Math.random()),
+        autoReloadToHTTPS: true,
+        horizontalRulePercent: Math.random() * 100,
+        showGlobalStats: true,
+        showFileStats: true,
+        centeredLoadingBars: !!Math.round(Math.random()),
+        showVisualSpeedometer: !!Math.round(Math.random()),
+        showTimeElapsed:!!Math.round(Math.random()),
+        // smoothLogoLoadFactor: 10,  // megabyte; make value as big or small as you like, bigger is less jitter, low is more responsive load values; only matters for first file load, real value is cached in localstorage on first load
+          // number exists as placeholder assumed size for files before we have received that info from server if it isn't supplied in html; higher the value, lower the chance and intensity of jitter--higher the value, the more artificially held back your image load is; used to prevent flickering of load logo in beginning as new objects start loading on first load when sice not manually specified in html directly
+        showFileSizes: !!Math.round(Math.random()),
+        showBarLoaders: !!Math.round(Math.random()),
+        showFilenames: !!Math.round(Math.random()),
+        showDownloadTotals: !!Math.round(Math.random()),
+        barLoaderPreset: randomPreset, /// one of: "", null, line, rainbow, energy, stripe, text, filenames, | would require customization to work: fan, circle, bubble, | see https://loading.io/progress/ | also: https://github.com/loadingio/loading-bar/blob/af5271ef7c675783fe870b5a60d6057f32f73e47/src/presets.ls
+        customLogoLoaderAttributes: {
+          'data-fill':[`${randomColor()}`,`data:ldbar/res,gradient(45,2,${randomColor()},${randomColor()},${randomColor()})`][Math.floor(Math.random()*2)],
+          'data-stroke':[`${randomColor()}`,`data:ldbar/res,gradient(45,2,${randomColor()},${randomColor()},${randomColor()})`][Math.floor(Math.random()*2)],
+          // 'data-stroke': '#f00',
+          // 'data-stroke': 'data:ldbar/res,gradient(0,1,#a551df,#fd51ad,#ff7f82,#ffb874,#ffeb90)',
+          'data-fill-background': [`${randomColor()}`,`data:ldbar/res,gradient(45,2,${randomColor()},${randomColor()},${randomColor()})`][Math.floor(Math.random()*2)],//`${randomColor()}`,
+        }, // see usage of this object in this script to get a clearer idea, along with docs @ https://loading.io/progress
+        customBarLoaderAttributes: {
+          'data-fill':[`${randomColor()}`,`data:ldbar/res,gradient(45,2,${randomColor()},${randomColor()},${randomColor()})`][Math.floor(Math.random()*2)],
+          'data-stroke':[`${randomColor()}`,`data:ldbar/res,gradient(45,2,${randomColor()},${randomColor()},${randomColor()})`][Math.floor(Math.random()*2)],
+          // 'data-stroke': '#f00',
+          // 'data-stroke': 'data:ldbar/res,gradient(0,1,#a551df,#fd51ad,#ff7f82,#ffb874,#ffeb90)',
+          'data-fill-background': `${randomColor()}`,
+        }, // see usage of this object in this script to get a clearer idea, along with docs @ https://loading.io/progress
+        backgroundColor: randomColor(),
+        logoFillColor: randomColor(),
+        backgroundOpacity: Math.max(.4,Math.random()),
+        // styleOverrides: `
+        //   .ldBar.label-center > .ldBar-label {
+        //      display: none;
+        //   }
+        //   .hide-loader {
+        //     opacity: 0 !important;
+        //     z-index: 0;
+        //     transition: all 1.5s;
+        //   }
+        // `,
+        onAframeRenderStart: function(evt) {
+          // https://aframe.io/docs/1.3.0/core/scene.html
+          // this fires last last
+          this.updateSubtitle("ready");
+          document.querySelector('.container').classList.add('hide-loader');
+          setTimeout(() => this.hideLoader(),1500);
+        },
+      };
+      console.log("using random config options:",loaderOptions)
+    </script>
+    
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <button onclick="location.href='/'"  style="position:absolute; left:40px; top:40px; z-index:1001">show default load screen</button>
+    <button onclick="location.href='/random-config.html'"  style="position:absolute; left:220px; top:40px; z-index:1001">show a new random config</button>
+    <a-scene loading-screen="enabled:false;" 
+             renderer="antialias: true;
+                   colorManagement: true;
+                   sortObjects: true;
+                   physicallyCorrectLights: true;
+                   maxCanvasWidth: 1920;
+                   maxCanvasHeight: 1920;">
+      <a-camera wasd-controls></a-camera>
+            <a-assets>
+        <!--     broken link to force an error and show how error handling works     -->
+        <a-asset-item id="space-break" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/need_some_space-badlink.glb?v=1663844941833" filesize="7000000"></a-asset-item>
+
+        <!--     lots of random models with CC from sketchfab so the load takes a while    -->
+        <a-asset-item id="nakna" src="https://cdn.glitch.me/4912face-eb4d-4b46-a196-56ed20bce8b6/nakna_gallery.glb?v=1663837524202" filesize="22543324"></a-asset-item>
+        <a-asset-item id="japan-room" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/japanese_traditional_room%20(1).glb?v=1663837554844" filesize="18942516"></a-asset-item>
+        <a-asset-item id="cinema" src="https://cdn.glitch.me/4912face-eb4d-4b46-a196-56ed20bce8b6/passage_-_cinema_art_in_the_day.glb?v=1663837588261" filesize="48135112"></a-asset-item>
+        <a-asset-item id="goban" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/black_to_play.glb?v=1663843111766" filesize="1918252"></a-asset-item>
+        <a-asset-item id="swan" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/nude_woman_with_swan_statue.glb?v=1663843165629" filesize="3041292"></a-asset-item>
+        <a-asset-item id="resting" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/resting_nude__1923.glb?v=1663843210918" filesize="1456352"></a-asset-item>
+        <a-asset-item id="basement" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/ricks_basement.glb?v=1663843212347" filesize="1748096"></a-asset-item>
+        <a-asset-item id="psych" src="https://cdn.glitch.me/4912face-eb4d-4b46-a196-56ed20bce8b6/the_vr_gallery_shows__vr_cyberdelics.glb?v=1663843242951" filesize="21808288"></a-asset-item>
+        <a-asset-item id="space" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/need_some_space.glb?v=1663844941833" filesize="1401564"></a-asset-item>
+        <a-asset-item id="porsche" src="https://cdn.glitch.me/4912face-eb4d-4b46-a196-56ed20bce8b6/free_1975_porsche_911_930_turbo.glb?v=1663845074654" filesize="21969080"></a-asset-item>
+        <a-asset-item id="lu-yu" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/lu_yu_figurine_derivative.glb?v=1663844969664" filesize="9838168"></a-asset-item>
+        <a-asset-item id="thinker" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/vr_thinker.glb?v=1663844994941" filesize="1139080"></a-asset-item>
+        <a-asset-item id="wrestler" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/two_wrestlers_in_combat_repost.glb?v=1663845037241" filesize="13257596"></a-asset-item>
+        <a-asset-item id="abandoned" src="https://cdn.glitch.me/4912face-eb4d-4b46-a196-56ed20bce8b6/abandoned_house_interior.glb?v=1663845201004" filesize="26925828"></a-asset-item>
+        
+        <!--     some images     -->
+        <a-asset-item id="zero" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/00060.png?v=1663837786871" filesize="463465"></a-asset-item>
+        <a-asset-item id="four" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/00019.png?v=1663840381284" filesize="580435"></a-asset-item>
+        
+        <!--     some videos     -->      
+        <a-asset-item id="vid1" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/quest2-controllers.mp4?v=1665004789482"></a-asset-item>
+        <a-asset-item id="vid2" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/a-console-promo.mp4?v=1665004797730"></a-asset-item>
+        
+        <!--     some audio     -->      
+        <a-asset-item id="some-wav-file" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/mixkit-training-with-punching-bag-2113.wav?v=1665004869136"></a-asset-item>
+        <a-asset-item id="some-mp3-file" src="https://cdn.glitch.global/4912face-eb4d-4b46-a196-56ed20bce8b6/Y2Mate.is%20-%20NO%20COPYRIGHT%20BOXING%20BELL%20SOUND%20EFFECT-tNul812L9Fg-160k-1660122858747.mp3?v=1665004889892"></a-asset-item>        
+      </a-assets>
+      <script>
+        // run the loader here, right after assets, for best performance; 
+        // before this and it won't work; 
+        // after this and we have to wait for HTML to parse, 
+        // which we would rather have in the background behind the loader.
+        window.initALoadScreen(loaderOptions);
+      </script>
+      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+      <a-entity position="0 0.1 -4" random-model></a-entity>
+      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
+      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
+      <a-sky color="#ECECEC"></a-sky>
+<!--       <a-entity id="n" gltf-model="#nakna"></a-entity> -->
+<!--       <a-entity id="j" gltf-model="#japan-room"></a-entity> -->
+<!--       <a-entity id="c" gltf-model="#cinema"></a-entity> -->
+<!--       <a-entity id="s" gltf-model="#scene"></a-entity> -->
+<!--       <a-entity id="g" gltf-model="#goban"></a-entity> -->
+<!--       <a-entity id="sw" gltf-model="#swan"></a-entity> -->
+<!--       <a-entity id="r" gltf-model="#resting"></a-entity> -->
+<!--       <a-entity id="b" gltf-model="#basement"></a-entity> -->
+<!--       <a-entity id="p" gltf-model="#psych"></a-entity> -->
+    </a-scene>
+  </body>
+  
+
+    <!--   github octo-cat overlay   -->
+    <a href="https://github.com/kylebakerio/a-load-screen" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="z-index: 2; fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    
+    <!--   REMIX BUTTON   -->
+    <style>
+      /* Import fonts */
+      @font-face {
+        font-family: HK Grotesk;
+        src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Regular.otf?v=1603136326027")
+          format("opentype");
+      }
+      @font-face {
+        font-family: HK Grotesk;
+        font-weight: bold;
+        src: url("https://cdn.glitch.me/605e2a51-d45f-4d87-a285-9410ad350515%2FHKGrotesk-Bold.otf?v=1603136323437")
+          format("opentype");
+      }
+
+      /* Our remix on glitch button */
+      .btn--remix {
+        font-family: HK Grotesk;
+        padding: 0.75rem 1rem;
+        font-size: 1.1rem;
+        line-height: 1rem;
+        font-weight: 500;
+        height: 2.75rem;
+        align-items: center;
+        cursor: pointer;
+        background: #FFFFFF;
+        border: 1px solid #000000;
+        box-sizing: border-box;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #000;
+        white-space: nowrap;
+        margin-left: auto;
+      }
+      .btn--remix img {
+        margin-right: 0.5rem;
+      }
+      .btn--remix:hover {
+        background-color: #D0FFF1;
+      }
+
+      /* Navigation grid */
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        margin: 1rem auto 0;
+        padding: 1rem 0 0.75rem 0;
+        width: 100%;
+        flex-wrap: wrap;
+      }
+
+      .footer a:not(.btn--remix):link,
+      a:not(.btn--remix):visited {
+        font-family: HK Grotesk;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 1.1rem;
+        color: #000;
+        text-decoration: none;
+        border-style: none;
+      }
+      .footer a:hover {
+        background: var(--color-primary);
+      }
+
+      .footer .links {
+        padding: 0.5rem 1rem 1.5rem;
+        white-space: nowrap;
+      }    
+    </style>
+    <footer class="footer" style="z-index:10000;bottom:20px;left:20px;position:fixed;width:200px;">
+      <a
+        class="btn--remix"
+        target="_top"
+        href="https://glitch.com/edit/#!/a-load-screen?path=random-config.html"
+      >
+        <img
+          src="https://cdn.glitch.com/605e2a51-d45f-4d87-a285-9410ad350515%2FLogo_Color.svg?v=1618199565140"
+          alt=""
+        />
+        Remix on Glitch
+      </a>
+    </footer>
+<!--   /REMIX BUTTON   -->    
+
+  
+  
+  <script>
+    AFRAME.registerComponent("random-model", {
+      models: [
+      "#nakna",
+      "#japan-room",
+      // "#cinema", // seems to not work right now
+      // "#scene",  // not sure that's a thing?
+      "#goban",
+      "#swan",
+      "#resting",
+      "#basement",
+      "#psych",
+      // "#space", // too bad, this model is amazing
+      "#porsche", // half works?
+      "#lu-yu",
+      "#thinker",
+      "#wrestler",
+      "#abandoned",
+      ],
+      init() {
+        let randomModel = document.createElement('a-entity');
+        let modelId = this.models[Math.floor(Math.random() * this.models.length)];
+        console.log("will try model",modelId)
+        this.el.setAttribute('gltf-model',modelId)
+        this.el.id = "random-model"
+        // this.el.appendChild(randomModel);
+      }
+    })
+  </script>
+</html>
