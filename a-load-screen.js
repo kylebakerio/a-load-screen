@@ -72,7 +72,7 @@
     document.head.appendChild(style);
   }
   
-  function init(
+  async function init(
     options={}
   ) {
     // defaults overridden on declaration
@@ -184,7 +184,11 @@
     debug('log',scene, scene.renderStarted)
     if (scene.renderStarted) {
       debug('error','scene is already rendering, skipping load screen altogether');
-      debug('warn','all loading screen hooks are skipped');
+      debug('warn','will run all hooks sequentially right away');
+      await opts.onFilesLoaded();
+      await opts.onAframeLoaded();
+      await opts.onAframeRenderStart();
+      debug('warn','completed loading hooks')
       // note: they may be depending on the hooks running, we should probably default to executing those
       return;
     }
@@ -425,21 +429,26 @@
       let loadedPercentage;
       try {
         loadedPercentage = (evt.detail.loadedBytes / evt.detail.totalBytes) * 100;
+        globalLoadRegister.bytes[name][0] = evt.detail.loadedBytes;
+        globalLoadRegister.bytes[name][1] = evt.detail.totalBytes;
+        updateBytes(name, bytesToMegabytes(evt.detail.loadedBytes, true), bytesToMegabytes(evt.detail.totalBytes, true));
+        updateGlobalLoader();
+        if (firstByte) {
+          firstByte = false;
+          cacheFileSize(el, globalLoadRegister.bytes[name][1])
+        }
       } catch (e) {
         debug('warn','progress error, assuming this is a video and using experimental video load attempt',e)
-        loadedPercentage = (el.buffered.end(0) / el.duration) * 100;
+        try {
+          loadedPercentage = (el.buffered.end(0) / el.duration) * 100;
+        } catch (e) {
+          // todo: this still isn't really quite worked out yet...
+          console.error("problem using buffered.end(0)",e)
+          console.log(el.buffered?.end)
+        }
         debug('warn', loadedPercentage);
       }
-      bar.set(loadedPercentage, false);
-      globalLoadRegister.bytes[name][0] = evt.detail.loadedBytes;
-      globalLoadRegister.bytes[name][1] = evt.detail.totalBytes;
-      // todo: update to using common utility functions:
-      updateBytes(name, Math.round(evt.detail.loadedBytes / 10000) / 100, Math.round(evt.detail.totalBytes / 10000) / 100);
-      updateGlobalLoader();
-      if (firstByte) {
-        firstByte = false;
-        cacheFileSize(el, globalLoadRegister.bytes[name][1])
-      }
+      if (loadedPercentage) bar.set(loadedPercentage, false);
     });
     el.addEventListener("loaded", evt => {
       // emitted by a-asset-item
@@ -763,7 +772,8 @@
         fileBarEls.push(barEl);
       // }
       if (opts.showFilenames) {
-        fileBarEls.push( createEl('p',{style:`width:${filenameWidth};white-space:nowrap;text-overflow:elipses;`}, opts.useFilename ? getFilename(el) : el.id) );
+        // note: width:filenameWidth was broken before, so... now that it's fixed, make sure it doesn't break anything. also, text-overflow:ellipses was mispelled, make sure you like it now.
+        fileBarEls.push( createEl('p',{style:`width:${filenameWidth}px;white-space:nowrap;text-overflow:ellipses;`}, opts.useFilename ? getFilename(el) : el.id) );
       }
       if (fileBarEls.length) {
         
