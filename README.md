@@ -1,4 +1,5 @@
-# ALPHA, API AND CSS WILL BE OVERHAULED BEFORE RELEASE
+# this repo is "alpha"
+it's an incomplete project that is "good enough to use" (and I do already use it in almost every project I make, and it already gives me many features I've wanted for years), but don't expect every feature to work, and don't expect the apit to stay consistent in future releases
 
 # features
 - show loading bars for all your `a-asset-item`s
@@ -37,7 +38,7 @@
     <!--  scripts needed for a-load-screen.js   -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/loadingio/loading-bar@v0.1.0/dist/loading-bar.min.css"/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/loadingio/loading-bar@v0.1.0/dist/loading-bar.min.js"></script>
-    <script src="/js/a-load-screen.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kylebakerio/a-load-screen/a-load-screen.js"></script>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>  
 ```
 
@@ -79,6 +80,13 @@ Also, adding here means we safely execute our script and add listeners before an
   <!--  rest of your scene... -->
 </html>
 ```
+
+# examples
+http://the-big-shell.glitch.me
+![image](https://user-images.githubusercontent.com/6391152/196289877-d453dc37-717f-4551-ad4b-62801e0e8a09.png)
+
+
+
 
 # roadmap
    - add scripts in dynamically
