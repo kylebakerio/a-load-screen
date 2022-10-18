@@ -46,6 +46,8 @@ it's an incomplete project that is "good enough to use" (and I do already use it
 We add it here because we want to show the loading screen as soon as possible, and at that point we have access to everything we need to start listening.
 Also, adding here means we safely execute our script and add listeners before any events fire.
 
+THESE OPTIONS ARE ALREADY PARTIALLY OUT OF DATE, REFER TO DEFAULTS FOUND IN a-load-screen.js TO SEE OPTIONS!
+
 ```html
   <!--  these are the defaults -->
   </a-assets>
