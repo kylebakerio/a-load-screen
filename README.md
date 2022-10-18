@@ -38,7 +38,7 @@ it's an incomplete project that is "good enough to use" (and I do already use it
     <!--  scripts needed for a-load-screen.js   -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/loadingio/loading-bar@v0.1.0/dist/loading-bar.min.css"/>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/loadingio/loading-bar@v0.1.0/dist/loading-bar.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/kylebakerio/a-load-screen/a-load-screen.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/kylebakerio/a-load-screen@v0.1.1/a-load-screen.js"></script>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>  
 ```
 
