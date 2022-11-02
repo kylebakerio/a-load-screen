@@ -121,6 +121,8 @@
       customLogoLoaderAttributes: null, // see usage of this object in this script to get a clearer idea, along with docs @ https://loading.io/progress
       customBarLoaderAttributes: null, // see usage of this object in this script to get a clearer idea, along with docs @ https://loading.io/progress
       backgroundColor: "black",
+      backgroundImage: "",
+      containerCSS: "", // specify e.g. background image props
       logoFillColor: "black",
       backgroundOpacity: .9,
       styleOverrides: `
@@ -133,7 +135,7 @@
           z-index: 0;
           transition: all 1.5s;
         }
-        .loader-container::-webkit-scrollbar {
+        .a-load-screen-content-container::-webkit-scrollbar {
             display: none;
         }
       `,
@@ -141,7 +143,7 @@
         // https://aframe.io/docs/1.3.0/core/scene.html
         // this fires last last
         this.updateSubtitle("ready");
-        document.querySelector('.container').classList.add('hide-loader'); // note: this is a 1.5s animation in CSS
+        document.querySelector('.a-load-screen-main-container').classList.add('hide-loader'); // note: this is a 1.5s animation in CSS
         setTimeout(() => this.hideLoader(),1500);
       },
       onAframeLoaded: function(evt) {
@@ -159,7 +161,7 @@
         // alert("file load complete")
         
         // can have this here, but I want to change this to update the title to "rendering..."
-        // document.querySelector('.container').classList.add('hide-loader');
+        // document.querySelector('.a-load-screen-main-container').classList.add('hide-loader');
         // setTimeout(() => this.hideLoader(),1500);
         
         // alt option to flash away:
@@ -176,7 +178,7 @@
         // - could have different behavior based on how important the files are
         // - force a page reload with location.reload()
         // - silently report to server for stats collectiong
-        console.error("a-load-screen | error loading file:",filename,url,evt);
+        debug("error","error loading file:",filename,url,evt);
       },
     }, options || {});
     
@@ -184,7 +186,7 @@
     debug('log',scene, scene.renderStarted)
     if (scene.renderStarted) {
       debug('error','scene is already rendering, skipping load screen altogether');
-      debug('warn','will run all hooks sequentially right away');
+      debug('warn','will run all hooks sequentially right away!');
       await opts.onFilesLoaded();
       await opts.onAframeLoaded();
       await opts.onAframeRenderStart();
@@ -229,7 +231,7 @@
     setupHTML();
     cssOverrides(glitchEffectCSS(opts.titleText, opts.logoURL, contrainedImageDimensions[0], contrainedImageDimensions[1]));
     cssOverrides(opts.styleOverrides);
-    anchor = document.querySelector('.loader-container');
+    anchor = document.querySelector('.a-load-screen-content-container');
     debug('log',"anchor:",anchor)
     
     if (opts.titleText) {
@@ -260,7 +262,7 @@
     // https://threejs.org/docs/#api/en/loaders/FileLoader
   };
   
-  // can try these later if desired
+  // currently unused; can try these later if desired to remove need to add dependencies manually? 
   function fetchStyle(url) {
     // https://stackoverflow.com/a/40933978/4526479
     return new Promise((resolve, reject) => {
@@ -286,6 +288,7 @@
       script.onload = resolve
       script.onerror = reject
     });
+  // end loadScript
   
   function findMaxFontSize(string="a string", parent=document.body, maxWidth=parent.width, attributes = {id:'font-size-finder',class:'some-class-with-font'}) {
     // by using parent, we can infer the same font inheritance;
@@ -345,7 +348,7 @@
   }
   
   function hideLoader() {
-    setAttribute('.container','style','display:none;')
+    setAttribute('.a-load-screen-main-container','style','display:none;')
   }
   
   function setupHTML() {    
@@ -354,9 +357,8 @@
   //     <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/loadingio/loading-bar@v0.1.0/dist/loading-bar.min.js"></script>
     
     setAttribute('body','style',`overflow:hidden;color:white;background-color:${opts.backgroundColor};`);
-    
     document.body.prepend(
-      createEl('div', {class: 'container', style: `
+      createEl('div', {class: 'a-load-screen-main-container', style: `
                                             font:${opts.font};
                                             font-size: 10pt;
                                             text-shadow: 0 0 3px #fff;
@@ -365,9 +367,13 @@
                                             position:relative;
                                             overflow:hidden;
                                             opacity:${opts.backgroundOpacity};
-                                            background-color:${opts.backgroundColor}`},
+                                            background-color:${opts.backgroundColor};
+                                            background-image:url(${opts.backgroundImage});
+                                            ${opts.containerCSS || ""}
+                      `}, // background image is experimental and untested
+               
       [
-        createEl('div', {class: 'center',   style: `
+        createEl('div', {/*class: 'center',*/   style: `
                                               position:absolute;
                                               top:50%;
                                               left:50%;
@@ -377,7 +383,7 @@
                                               white-space:nowrap;
                                               `},
         [
-          createEl('div', {class: 'loader-container', style: `
+          createEl('div', {class: 'a-load-screen-content-container', style: `
                                                        position: relative;
                                                        height: unset;
                                                        display:grid;
@@ -402,8 +408,9 @@
 
   
   function addEventListeners(el, bar, name) {
-    debug('log',el,bar,name)
+    debug('log',el,bar,el.id, getFilename(el))
     let firstByte = true;
+    let filename = getFilename(el);
     el.addEventListener("error", evt => {
       // note: this can be missed, sometimes the error happens before we've added the listeners it seems.
       
@@ -413,7 +420,7 @@
       // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
       
       // this would normally cause a forever-hand, I think I want to patch that behavior though
-      debug('error',"error loading file!", name, evt);
+      debug('warn',"error loading file!", name, evt);
       fileLoadError(name, evt, el);
       // bar.set(n)
       // bar.setAttribute('value',n)
@@ -429,24 +436,28 @@
       let loadedPercentage;
       try {
         loadedPercentage = (evt.detail.loadedBytes / evt.detail.totalBytes) * 100;
-        globalLoadRegister.bytes[name][0] = evt.detail.loadedBytes;
-        globalLoadRegister.bytes[name][1] = evt.detail.totalBytes;
+        globalLoadRegister.bytes[filename][0] = evt.detail.loadedBytes;
+        globalLoadRegister.bytes[filename][1] = evt.detail.totalBytes;
         updateBytes(name, bytesToMegabytes(evt.detail.loadedBytes, true), bytesToMegabytes(evt.detail.totalBytes, true));
         updateGlobalLoader();
         if (firstByte) {
           firstByte = false;
-          cacheFileSize(el, globalLoadRegister.bytes[name][1])
+          cacheFileSize(el, globalLoadRegister.bytes[filename][1])
         }
       } catch (e) {
         debug('warn','progress error, assuming this is a video and using experimental video load attempt',e)
-        try {
-          loadedPercentage = (el.buffered.end(0) / el.duration) * 100;
-        } catch (e) {
-          // todo: this still isn't really quite worked out yet...
-          console.error("problem using buffered.end(0)",e)
-          console.log(el.buffered?.end)
+        if (el.buffered.length !== 0) {
+          debug("log","progress, likely video/audio?, buffered length is greater than 0", el.id, el)
+          try {
+            loadedPercentage = ((el.buffered.end(0)*100) / el.duration);
+          } catch (e) {
+            debug("error","problem using buffered.end(0)",e, el.buffered?.end)
+            debugger
+          }
+          debug('log', el.id, loadedPercentage);
+        } else {
+          debug("warn","progress, likely video (or audio?) but buffered length is 0", el.id, el)
         }
-        debug('warn', loadedPercentage);
       }
       if (loadedPercentage) bar.set(loadedPercentage, false);
     });
@@ -455,16 +466,16 @@
       // however: this may be emitted when there is a timeout--makes sense with how aframe treats timeout...
       // not sure, we should probably try to ignore that? todo...
       bar.set(100,false);
-      globalLoadRegister.bytes[name][0] = globalLoadRegister.bytes[name][1];
-      updateBytes(name, Math.round(globalLoadRegister.bytes[name][0] / 10000) / 100, Math.round(globalLoadRegister.bytes[name][1] / 10000) / 100);
+      globalLoadRegister.bytes[filename][0] = globalLoadRegister.bytes[filename][1];
+      updateBytes(name, Math.round(globalLoadRegister.bytes[filename][0] / 10000) / 100, Math.round(globalLoadRegister.bytes[filename][1] / 10000) / 100);
       updateGlobalLoader();
       // globalLoadRegister.bytes[name][1] = evt.detail.totalBytes;
       if (firstByte) {
         firstByte = false;
-        cacheFileSize(el, globalLoadRegister.bytes[name][1])
+        cacheFileSize(el, globalLoadRegister.bytes[filename][1])
       }      
     });
-    
+
     el.addEventListener("timeout", evt => {
       debug('warn',"timeout loading file?", evt);
       // bar.set(n)
@@ -473,9 +484,9 @@
     });
     
     
-    el.addEventListener("load", evt => {
+    el.addEventListener("load", function(evt) {
       // used for images
-      debug('log',"load event; IMG?", evt);
+      debug('log',"load event; IMG?", evt, this);
       bar.set(100, false);
       // bar.set(100, false) // maybe change color to green? do something else?
     });
@@ -483,7 +494,7 @@
     el.addEventListener("loadeddata", evt => {
       // used for HTMLMediaElement (audio, video)
       // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement
-      debug('log',"loadeddata; HTMLMediaElement?", evt);
+      debug('log',"loadeddata; HTMLMediaElement (video/audio)?", evt);
       bar.set(100, false);
       // bar.set(n)
       // bar.setAttribute('value',n)
@@ -814,7 +825,7 @@
     let errorBar = document.querySelector(`.${name}`).parentElement;
     errorBar.style.backgroundColor = "red";
     errorBar.setAttribute('title',evt.detail.xhr.message);
-    // console.log({AFRAME, 'THREE.Cache':THREE.Cache})
+    // debug("log",{AFRAME, 'THREE.Cache':THREE.Cache})
     if (fileRetryCounters[name] < opts.fileRetryOnError) {
       debug('error','file load retry not yet implemented; for now, forcing a page refresh is recommended');
       // how to do this: a-frame probably isn't set up to expect dynamically added elements to a-assets
@@ -846,7 +857,7 @@
     // if not available, with fall back to smoothLogoLoadFactor, which is an imaginary presumed value in bytes to use
     let claimed = getClaimedFileSize(el);
     const url = el.getAttribute('src');
-    // console.log("cached",el,el.getAttribute('src'),getFilename(el))
+    // debug("log","cached",el,el.getAttribute('src'),getFilename(el))
     let cached = localStorage.cachedSizes ? JSON.parse(localStorage.cachedSizes)[url] : -1;
     return claimed !== -1 ? 
             claimed :
@@ -857,7 +868,7 @@
 
   function addToGlobalLoadRegister(el, name) {
     if (el.tagName === "A-ASSET-ITEM") {
-      globalLoadRegister.bytes[name] = [0, getFileSize(el)];
+      globalLoadRegister.bytes[getFilename(el)] = [0, getFileSize(el)];
       // first class citizen, we can track
       return 1; // thing we're primarily handling right now
     }
@@ -879,7 +890,7 @@
 
   function debug(f="log", ...args) {
     if (opts.debug.includes(f)) {
-      console[f](...args);
+      console[f]('a-load-screen|',...args);
     }
   }
 
