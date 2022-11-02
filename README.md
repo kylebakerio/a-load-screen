@@ -1,5 +1,5 @@
 # this repo is "alpha"
-it's an incomplete project that is "good enough to use" (and I do already use it in almost every project I make, and it already gives me many features I've wanted for years), but don't expect every feature to work, and don't expect the apit to stay consistent in future releases
+it's an incomplete project that is "good enough to use" (and I do already use it in almost every project I make, and it already gives me many features I've wanted for years), but don't expect every feature to work, and don't expect the apit to stay consistent in future releases. some config setups will not look great because of incomplete CSS implementation that I've been meaning to rewrite. but overall, it's a huge improvement.
 
 # features
 - show loading bars for all your `a-asset-item`s
