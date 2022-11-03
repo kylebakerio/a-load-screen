@@ -1,5 +1,5 @@
 # this repo is "alpha"
-it's an incomplete project that is "good enough to use" (and I do already use it in almost every project I make, and it already gives me many features I've wanted for years), but don't expect every feature to work, and don't expect the apit to stay consistent in future releases. some config setups will not look great because of incomplete CSS implementation that I've been meaning to rewrite. but overall, it's a huge improvement.
+it's an incomplete project that is "good enough to use" (and I do already use it in almost every project I make, and it already gives me many features I've wanted for years), but don't expect every feature to work, and **expect** the api to change in future releases. Some config setups will produce awkward layouts because of incomplete CSS implementation that I will rewrite. All that said, it's a huge improvement on the built in load screen that adds some much needed features to A-Frame, and I use this in every project I care about already.
 
 # features
 - show loading bars for all your `a-asset-item`s
